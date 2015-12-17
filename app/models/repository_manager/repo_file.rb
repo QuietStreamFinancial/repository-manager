@@ -1,3 +1,5 @@
+require 'zip'
+
 class RepositoryManager::RepoFile < RepositoryManager::RepoItem
   attr_accessible :file, :content_type, :file_size, :checksum if RepositoryManager.protected_attributes?
 
@@ -87,7 +89,9 @@ class RepositoryManager::RepoFile < RepositoryManager::RepoItem
     options[:owner] ? owner = options[:owner] : owner = self.owner
     options[:sender] ? sender = options[:sender] : sender = self.sender
 
-    Zip::File.open(self.file.path) do |zip_file|
+    # If file is stored in the cloud, we need to download it first
+    file = RepositoryManager.auto_overwrite_item == :file ? self.file.path : open(self.file_url)
+    Zip::File.open(file) do |zip_file|
       # This hash make the link between the path and the item (if it exist)
       #link_path_item = {}
 
