@@ -348,7 +348,8 @@ module RepositoryManager
             raise RepositoryManager::PermissionException.new("move repo_item failed. You don't have the permission to update the '#{repo_item.name}'")
           end
           # We check if we can_create in the source_folder
-          unless can_create?(target)
+          # Sender is the original creator of the item, so we check him as well
+          unless can_create?(target) || repo_item.sender.can_create?(target)
             repo_item.errors.add(:move, I18n.t('repository_manager.errors.repo_item.move.no_permission'))
             raise RepositoryManager::PermissionException.new("move repo_item failed. You don't have the permission to create in the source_folder '#{options[:source_folder].name}'")
           end
