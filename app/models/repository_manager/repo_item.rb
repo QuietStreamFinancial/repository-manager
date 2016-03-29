@@ -71,6 +71,7 @@ class RepositoryManager::RepoItem < ActiveRecord::Base
       if child_with_same_name.is_file?
         child_with_same_name.file = self.file
         child_with_same_name.sender = self.sender
+        child_with_same_name.metadata = self.metadata
         #child_with_same_name.owner = self.owner
         returned_item = child_with_same_name
         self.destroy
