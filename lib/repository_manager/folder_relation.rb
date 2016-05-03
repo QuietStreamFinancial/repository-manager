@@ -1,4 +1,4 @@
-class FolderRelation < ActiveRecord::Base
+class RepositoryManager::FolderRelation < ActiveRecord::Base
   belongs_to :folderable, polymorphic: true
   belongs_to :rm_repo_item, class_name: 'RepositoryManager::RepoItem'
 
