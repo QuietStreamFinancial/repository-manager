@@ -25,7 +25,7 @@ module RepositoryManager #:nodoc:
     def copy_migrations
       migrations = [
         ['20131018214212_create_repository_manager.rb','create_repository_manager.rb'],
-        ['create_folder_relation.rb','create_folder_relation.rb']
+        ['create_folder_relations.rb','create_folder_relations.rb']
       ]
       migrations.each do |migration|
         migration_template '../../../../db/migrate/' + migration[0], 'db/migrate/' + migration[1]
