@@ -18,15 +18,17 @@ module RepositoryManager #:nodoc:
     end
 
     # all public methods in here will be run in order
-    #def copy_initializer_file
+    # def copy_initializer_file
     #  copy_file "initializer.rb", "config/initializers/repository_manager_initializer.rb"
-    #end
+    # end
 
     def copy_migrations
-      migrations = [["20131018214212_create_repository_manager.rb","create_repository_manager.rb"]
-                    ]
+      migrations = [
+        ['20131018214212_create_repository_manager.rb','create_repository_manager.rb'],
+        ['create_folder_relation.rb','create_folder_relation.rb']
+      ]
       migrations.each do |migration|
-        migration_template "../../../../db/migrate/" + migration[0], "db/migrate/" + migration[1]
+        migration_template '../../../../db/migrate/' + migration[0], 'db/migrate/' + migration[1]
       end
     end
   end
