@@ -1,7 +1,6 @@
 class CreateRepositoryManager < ActiveRecord::Migration
 
   def change
-
     create_table :rm_sharings do |t|
       t.references :owner, polymorphic: true, index: true
       t.references :creator, polymorphic: true, index: true
@@ -31,12 +30,9 @@ class CreateRepositoryManager < ActiveRecord::Migration
       t.string :file
       t.string :type
       t.string :checksum
+      t.datetime :deleted_at
     end
 
-    create_table :rm_folder_relations do |t|
-      t.belongs_to :folderable, polymorphic: true, index: true
-      t.belongs_to :rm_repo_item, index: true, foreign_key: true
-      t.integer :role
-    end
+    # add_index :rm_repo_items, :deleted_at
   end
 end

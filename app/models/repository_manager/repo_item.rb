@@ -2,8 +2,10 @@ class RepositoryManager::RepoItem < ActiveRecord::Base
   self.table_name = :rm_repo_items
 
   attr_accessible :type, :ancestry, :name, :owner, :sender if RepositoryManager.protected_attributes?
-
   before_save :put_sender
+
+  has_one :folder_relation, foreign_key: :rm_repo_item_id, class_name: 'RepositoryManager::FolderRelation', dependent: :destroy
+  default_scope { where(deleted_at: nil) }
 
   if RepositoryManager.has_paper_trail
     has_paper_trail
@@ -154,6 +156,22 @@ class RepositoryManager::RepoItem < ActiveRecord::Base
     # We check if another item has the same name
     #RepositoryManager::RepoItem.where(name: name).where(id: sibling_ids_without_itself).first ? true : false
     RepositoryManager::RepoItem.where('name = ?', name).where(id: sibling_ids_without_itself).first ? true : false
+  end
+
+  # Softly deletes an item and its descendants
+  def soft_delete
+    self.subtree.each do |repo_item|
+      repo_item.deleted_at = DateTime.now
+      repo_item.save!
+    end
+  end
+
+  # Restores a softly deleted item and its descendants
+  def restore
+    self.subtree.unscope(where: :deleted_at).each do |repo_item|
+      repo_item.deleted_at = nil
+      repo_item.save!
+    end
   end
 
   private
