@@ -7,6 +7,8 @@ class RepositoryManager::RepoItem < ActiveRecord::Base
   has_one :folder_relation, foreign_key: :rm_repo_item_id, class_name: 'RepositoryManager::FolderRelation', dependent: :destroy
   default_scope { where(deleted_at: nil) }
 
+  attr_accessor :project_folder
+
   if RepositoryManager.has_paper_trail
     has_paper_trail
   end
@@ -172,6 +174,33 @@ class RepositoryManager::RepoItem < ActiveRecord::Base
       repo_item.deleted_at = nil
       repo_item.save!
     end
+  end
+
+  def ancestors_names
+    ancestor_tailor.collect(&:name).join('/')
+  end
+
+  def ancestors_ids
+    ancestor_tailor.collect(&:id).join('/')
+  end
+
+  def ancestor_tailor
+    new_ancestors = self.ancestors.to_a
+
+    if project_folder && new_ancestors.first&.folder_relation&.role == 'organizations'
+      new_ancestors[0] = project_folder.parent
+      new_ancestors.insert(1, project_folder)
+    end
+
+    new_ancestors
+  end
+
+  def shared
+    RepositoryManager::Sharing.where(repo_item: [self, self.root]).count > 0
+  end
+
+  def last_modified
+    versions.last.created_at
   end
 
   private

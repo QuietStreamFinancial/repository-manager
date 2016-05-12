@@ -186,6 +186,10 @@ class RepositoryManager::RepoFolder < RepositoryManager::RepoItem
     children.take
   end
 
+  def role
+    (self.ancestry.nil? && self.owner.is_a?(Account)) ? self.folder_relation.role : 'own'
+  end
+
   private
   # Returns the default path of the zip file
   # object is the object that want to download this file
